@@ -1,154 +1,15 @@
-
-
-# import sys, os
-# from pathlib import Path
-# import pandas as pd # import Pandas
-# from tqdm import tqdm
-
-
-# from widgets_alignment import set_alignment
-
-# from PyQt6.QtWidgets import (
-#     QApplication, QStyleFactory,
-#     QMainWindow,
-#     QWidget,
-#     QFileDialog
-# )
-# from PyQt6.QtGui import QColor
-# from PyQt6.QtCore import Qt, QThread, pyqtSignal
-# from PyQt6 import uic
-
-# import random
-
-# import string
-
-
-
-
-# class CICML(QMainWindow):
-
-#     progress = pyqtSignal(int)
-#     status = pyqtSignal(str)
-#     finished = pyqtSignal(pd.DataFrame)
-
-
-#     def __init__(self, parent = None, flags = Qt.WindowType(0)):
-#         super().__init__(parent, flags)
-
-#         uic.loadUi(r'designs\self_things.ui', self)
-
-#         self.setWindowTitle('Test')
-#         self.resize(300, 200)
-
-#         self.submit_btn.setText('Submit') #= QPushButton('Submit')
-#         self.submit_btn.setFixedSize(70, 28)
-#         self.submit_btn.clicked.connect(self.update_status)
-
-#         self.upload_btn.clicked.connect(self.upload_file)
-
-#         self.status_lbl.setText('Listening 👂')
-#         # self.status_lbl.adjustSize()
-
-#         self.layout.setAlignment(set_alignment('center'))
-#         self.layout.setSpacing(20)
-
-#         container = QWidget()
-#         container.setLayout(self.layout)
-#         self.setCentralWidget(container)
-
-
-#     def update_status(self):
-#         chars = list('0123456789') + list(string.ascii_letters)
-#         random.shuffle(chars)
-#         self.status_lbl.setText(''.join(chars)[:14])
-
-
-#     def upload_file(self):
-#         file_path, _ =  QFileDialog.getOpenFileName(self,
-#                                                  caption='Upload file',
-#                                                  directory="",
-#                                                  filter="Excel Files (*.xlsx *.xls *.xlsm *.csv)")
-#         if file_path == '':
-#             return
-
-#         cols = self.__handle_file(file_path)
-#         cols = ', '.join(cols)
-
-#         # self.update_status()
-
-
-#     def __handle_file(self, filepath: str):        
-#         file_ext = Path(filepath).suffix
-
-#         match file_ext:
-#             case '.xlsx' | '.xls' | '.xlsm':
-#                 return
-#             case '.csv':
-#                 df = self.__load_csv(filepath)
-#                 return list(df.columns)
-#             case _: return pd.DataFrame()
-
-
-#     def __load_csv(self, file_path):
-#         self.thread = CsvLoaderThread(file_path)
-#         self.thread.progress.connect(self.update_progress)
-#         self.thread.status.connect(self.status_lbl.setText)
-#         self.thread.finished.connect(self.handle_csv_loaded)
-#         self.thread.start()
-    
-    
-    
-# class CsvLoaderThread(QThread):
-
-#     progress = pyqtSignal(int)
-#     status = pyqtSignal(str)
-#     finished = pyqtSignal(pd.DataFrame)
-
-
-#     def __init__(self, file_path, chunksize=10000):
-#         super().__init__()
-#         self.file_path = file_path
-#         self.chunksize = chunksize
-
-
-#     def run(self):
-#         chunks = []
-#         total_rows = sum(1 for _ in open(self.file_path)) - 1
-#         loaded_rows = 0
-
-#         for chunk in pd.read_csv(self.file_path, chunksize=self.chunksize):
-#             chunks.append(chunk)
-#             loaded_rows += len(chunk)
-#             percent = int((loaded_rows / total_rows) * 100)
-#             self.progress.emit(percent)
-#             self.status.emit(f"Loading: {percent}%")
-
-#         df = pd.concat(chunks)
-#         self.status.emit("✅ Done")
-#         self.finished.emit(df)
-
-        
-
-        
-
-# app = QApplication(sys.argv)
-# app.setStyle('windows11')
-# cicml = CICML()
-# cicml.show()
-# sys.exit(app.exec())
-
-
 import sys
 from pathlib import Path
+
 import pandas as pd
-import random
-import string
+from openpyxl import load_workbook
 
 from PyQt6.QtWidgets import (
-    QApplication, QMainWindow, QFileDialog, QDialog
+    QApplication, QDialog, QFileDialog, QMessageBox, QWidget
 )
 from PyQt6.QtCore import Qt, QThread, pyqtSignal
 from PyQt6 import uic
+
 
 
 class CsvLoaderThread(QThread):
@@ -164,7 +25,9 @@ class CsvLoaderThread(QThread):
     def run(self):
         chunks = []
         try:
-            total_rows = sum(1 for _ in open(self.file_path, encoding='utf-8')) - 1
+            with open(self.file_path, encoding='utf-8') as f:
+                total_rows = sum(1 for _ in f) - 1
+
             if total_rows <= 0:
                 self.status.emit("❌ CSV is empty.")
                 self.finished.emit(pd.DataFrame())
@@ -176,14 +39,13 @@ class CsvLoaderThread(QThread):
                 loaded_rows += len(chunk)
                 percent = int((loaded_rows / total_rows) * 100)
                 self.progress.emit(percent)
-                self.status.emit(f"Loading: {percent}%")
 
             df = pd.concat(chunks)
             self.status.emit("✅ Done")
             self.finished.emit(df)
 
         except Exception as e:
-            self.status.emit(f"❌ Error: {str(e)}")
+            self.status.emit(f"❌ Error: {e}")
             self.finished.emit(pd.DataFrame())
 
 
@@ -191,67 +53,121 @@ class CICML(QDialog):
     def __init__(self, parent=None, flags=Qt.WindowType(0)):
         super().__init__(parent, flags)
 
-        # Load UI from .ui file
         uic.loadUi('designs/self_things.ui', self)
 
         self.setWindowTitle('Test')
         self.resize(500, 250)
-        # self.adjustSize()
 
-        # Connect buttons
         self.submit_btn.setText('Submit')
         self.submit_btn.setFixedSize(70, 28)
-        # self.submit_btn.clicked.connect(self.random_status)
 
         self.upload_btn.clicked.connect(self.upload_file)
 
         self.status_lbl.setText('Listening 👂')
         self.status_lbl.adjustSize()
 
+        self.filename = ""
+        self.file_path = ""
 
     def upload_file(self):
-        file_path, _ = QFileDialog.getOpenFileName(
+        self.file_path, _ = QFileDialog.getOpenFileName(
             self,
             caption='Upload file',
             directory="",
-            filter="CSV Files (*.csv);;Excel Files (*.xlsx *.xls *.xlsm)"
+            filter="Supported Files: (*.csv *.xlsx *.xls *.xlsm)"
         )
-        if file_path:
-            self.__handle_file(file_path)
+        if self.file_path:
+            self.filename = Path(self.file_path).name
+            self.handle_file(self.file_path)
 
-    def __handle_file(self, filepath: str):
-        ext = Path(filepath).suffix
+
+    def handle_file(self, filepath: str):
+        ext = Path(filepath).suffix.lower()
+        # self.filename = Path(filepath).name
+
         if ext == '.csv':
-            self.__load_csv(filepath)
+            self.load_csv(filepath)
         elif ext in {'.xls', '.xlsx', '.xlsm'}:
-            self.status_lbl.setText("Excel support not implemented yet.")
+            self.load_excel(filepath)
         else:
-            self.status_lbl.setText("Unsupported file type.")
+            self.status_lbl.setText("❌ Unsupported file type.")
 
-    def __load_csv(self, file_path):
-        self.filename = Path(file_path).name
+
+    def load_csv(self, file_path):
         self.thread = CsvLoaderThread(file_path)
         self.thread.progress.connect(self.update_progress)
-        self.thread.status.connect(self.update_progress)
+        self.thread.status.connect(self.status_lbl.setText)
         self.thread.finished.connect(self.handle_csv_loaded)
         self.thread.start()
 
+    
+    def load_excel(self, file_path):
+        dialog = SheetSelectorDialogue(file_path)
+        if dialog.exec() == QDialog.DialogCode.Accepted:
+            sheetname = dialog.selected_sheet
+        try:
+            df = pd.read_excel(file_path, sheet_name=sheetname)
+            if df.empty:
+                self.status_lbl.setText("No data in Excel file.")
+            else:
+                self.status_lbl.setText(f"✅ Loaded {len(df)} rows from Excel.")
+                self.main_status_lbl.setText(f"File: {self.filename}")
+                self.setWindowTitle("Done")
+        except Exception as e:
+            self.status_lbl.setText(f"❌ Excel load error: {e}")
+
+
 
     def update_progress(self, percent):
-        self.main_status_lbl.setText(f'Uploading {self.filename}')
+        self.main_status_lbl.setText(f"Uploading: {self.filename}")
         self.status_lbl.setText(f"{percent}%")
 
     def handle_csv_loaded(self, df):
         if df.empty:
             self.status_lbl.setText("No data loaded.")
         else:
-            self.status_lbl.setText(f"Loaded {len(df)} rows.")
+            self.status_lbl.setText(f"✅ Loaded {len(df)} rows.")
         self.setWindowTitle("Done")
 
 
+
+class SheetSelectorDialogue(QDialog):
+    def __init__(self, file_path, parent = None):
+        super().__init__(parent)
+        uic.loadUi(r'designs\sheet_selector.ui', self)
+
+        self.setFixedSize(310, 240)
+
+        self.setWindowTitle("Select Sheet")
+        self.selected_sheet = None
+
+        try:
+            sheetnames = load_workbook(file_path, read_only=True).sheetnames
+            self.sheet_name_cbox.addItems(['Select Sheet'] + sheetnames)
+            self.sheet_name_cbox.currentTextChanged.connect(lambda text: self.sheet_name_cbox.setToolTip(text))
+
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Failed to read Excel file: {e}")
+            self.reject()
+        self.ok_btn.clicked.connect(self.accept_selection)
+        self.cancel_btn.clicked.connect(self.reject)
+
+    def accept_selection(self):
+        selected = self.sheet_name_cbox.currentText()
+
+        if selected == 'Select Sheet':
+            QMessageBox.warning(self, 'Sheet Name Error', 'You forgot to select sheetname 🙂')
+        else:
+            self.selected_sheet = selected
+            self.accept()
+
+
+
+
 if __name__ == "__main__":
+    # file = r'learning\LAD_DEC_2021_UK_NC.xlsx'
     app = QApplication(sys.argv)
-    app.setStyle('Fusion') 
+    app.setStyle('Fusion')
     window = CICML()
     window.show()
     sys.exit(app.exec())

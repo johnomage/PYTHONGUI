@@ -84,10 +84,10 @@
      <bool>true</bool>
     </property>
     <property name="placeholderText">
-     <string>path to file</string>
+     <string>path to file shows here</string>
     </property>
    </widget>
-   <widget class="QWidget" name="horizontalLayoutWidget_6">
+   <widget class="QWidget" name="horizontalLayoutWidget">
     <property name="geometry">
      <rect>
       <x>190</x>
@@ -198,7 +198,7 @@
        <height>51</height>
       </rect>
      </property>
-     <layout class="QHBoxLayout" name="int_type_hbox_6">
+     <layout class="QHBoxLayout" name="int_type_hbox">
       <property name="spacing">
        <number>10</number>
       </property>
@@ -215,7 +215,7 @@
        <number>5</number>
       </property>
       <item>
-       <widget class="QLabel" name="int_type_lbl_6">
+       <widget class="QLabel" name="int_type_lbl">
         <property name="font">
          <font>
           <pointsize>10</pointsize>
@@ -233,7 +233,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="int_type_cbox_6">
+       <widget class="QComboBox" name="int_type_cbox">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -258,7 +258,7 @@
        <height>51</height>
       </rect>
      </property>
-     <layout class="QHBoxLayout" name="la_hbox_6">
+     <layout class="QHBoxLayout" name="la_hbox">
       <property name="spacing">
        <number>10</number>
       </property>
@@ -275,7 +275,7 @@
        <number>5</number>
       </property>
       <item>
-       <widget class="QLabel" name="la_lbl_6">
+       <widget class="QLabel" name="la_lbl">
         <property name="font">
          <font>
           <pointsize>10</pointsize>
@@ -293,7 +293,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="la_cbox_6">
+       <widget class="QComboBox" name="la_cbox">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -318,7 +318,7 @@
        <height>51</height>
       </rect>
      </property>
-     <layout class="QHBoxLayout" name="int_tim_hbox_6">
+     <layout class="QHBoxLayout" name="int_tim_hbox">
       <property name="spacing">
        <number>10</number>
       </property>
@@ -335,7 +335,7 @@
        <number>5</number>
       </property>
       <item>
-       <widget class="QLabel" name="int_time_lbl_6">
+       <widget class="QLabel" name="int_time_lbl">
         <property name="font">
          <font>
           <pointsize>10</pointsize>
@@ -353,7 +353,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="int_time_cbox_6">
+       <widget class="QComboBox" name="int_time_cbox">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -378,7 +378,7 @@
        <height>51</height>
       </rect>
      </property>
-     <layout class="QHBoxLayout" name="cml_hbox_6">
+     <layout class="QHBoxLayout" name="cml_hbox">
       <property name="spacing">
        <number>10</number>
       </property>
@@ -395,7 +395,7 @@
        <number>5</number>
       </property>
       <item>
-       <widget class="QLabel" name="cml_lbl_6">
+       <widget class="QLabel" name="cml_lbl">
         <property name="font">
          <font>
           <pointsize>10</pointsize>
@@ -413,7 +413,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="cml_cbox_6">
+       <widget class="QComboBox" name="cml_cbox">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -438,7 +438,7 @@
        <height>51</height>
       </rect>
      </property>
-     <layout class="QHBoxLayout" name="ci_hbox_6">
+     <layout class="QHBoxLayout" name="ci_hbox">
       <property name="spacing">
        <number>10</number>
       </property>
@@ -455,7 +455,7 @@
        <number>5</number>
       </property>
       <item>
-       <widget class="QLabel" name="ci_lbl_6">
+       <widget class="QLabel" name="ci_lbl">
         <property name="font">
          <font>
           <pointsize>10</pointsize>
@@ -473,7 +473,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="ci_cbox_6">
+       <widget class="QComboBox" name="ci_cbox">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
